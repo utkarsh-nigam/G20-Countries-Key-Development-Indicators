@@ -1,0 +1,849 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+        <meta name="description" content="" />
+        <meta name="author" content="" />
+        <title>G20 Countries | Key Development Indicators</title>
+        <link rel="icon" type="image/x-icon" href="assets/img/favicon.ico" />
+        <!-- Font Awesome icons (free version)-->
+        <script src="https://use.fontawesome.com/releases/v5.13.0/js/all.js" crossorigin="anonymous"></script>
+        <!-- Google fonts-->
+        <link href="https://fonts.googleapis.com/css?family=Saira+Extra+Condensed:500,700" rel="stylesheet" type="text/css" />
+        <link href="https://fonts.googleapis.com/css?family=Muli:400,400i,800,800i" rel="stylesheet" type="text/css" />
+        <!-- Core theme CSS (includes Bootstrap)-->
+        <link href="css/styles.css" rel="stylesheet" />
+        <script src="https://www.gstatic.com/charts/loader.js"></script>
+        <script>
+            google.charts.load('current',{'packages':['corechart','controls']});
+            google.charts.setOnLoadCallback(drawAllSheets);
+            var vtitle1 = "In Billions ($)";
+            var twoQuery=0;
+            var data1Query = 0;
+            var data2Query = 0;
+            var vtitle2 ="GDPOverall (in Billion $) vs GDPPerCapita (in $)"
+            var twoQuery2=0;
+            var oldData = 0;
+            var newData = 0;
+            var x1_metric="GDPOverall";
+            var x2_metric="GDPPerCapita";
+            function checkColumn(input_value) {
+                input_value=input_value-1;
+                var quotient = Math.floor(input_value/26);
+                var remainder = input_value % 26;
+                if (quotient<1) {
+                    var outputColumn=String.fromCharCode('A'.charCodeAt() + (remainder));
+                    }
+                else {
+                    var outputColumn=String.fromCharCode('A'.charCodeAt() + (quotient-1))+String.fromCharCode('A'.charCodeAt() + (remainder));
+                }
+                return outputColumn;
+            };
+            function sleep(delay) {
+                var start = new Date().getTime();
+                while (new Date().getTime() < start + delay);
+            }
+
+            function drawAllSheets() {
+                drawSheetName('GDPOverall',"SELECT A,C,D,E,F,G,H,I",summaryResponseHandler);
+                drawSheetName('Trends','SELECT A,C,D,E,F,G,H,I,J,K,L,M,N,O,P,Q,R,S,T,U,V WHERE B="GDPOverall"',trendResponseHandler);
+                drawSheetName('GDPOverall','SELECT A,I WHERE NOT A="European Union"',geographicalResponseHandler);
+                drawSheetName('GDPOverall','SELECT A,B,I',metricCompResponseHandler);
+                //sleep(500);
+                drawSheetName('GDPPerCapita','SELECT A,B,I',metricCompResponseHandler);
+                drawSheetName('yearlyPerformance','SELECT B,I WHERE A="Argentina"',yearlyPerformanceResponseHandler);
+                sleep(500);
+                drawSheetName('yearlyPerformance','SELECT B,C WHERE A="Argentina"',yearlyPerformanceResponseHandler);
+                drawSheetName('countryComp','SELECT A,Q,Z,H',countryCompResponseHandler);
+                
+                //metricCompResponseHandler("SELECT A,I","SELECT A,I","GDPOverall","GDPperCapita");
+                //drawSheetName('GDPOverall','SELECT A,I WHERE NOT A="European Union"',geographicalResponseHandler);
+            } //drawAllSheets
+
+            function drawSheetName(sheetName, query, responseHandler) {
+                var queryString = encodeURIComponent(query);
+                var query = new google.visualization.Query(
+                    'https://docs.google.com/spreadsheets/d/1NBgezeOptGfzIlnCHEoMnLoAUIQDHdR6MxyHEgKTmzY/gviz/tq?sheet='
+                            + sheetName + '&headers=1&tq=' + queryString); //Query
+                query.send(responseHandler);
+            }
+
+            function checkError(response) {
+                if(response.isError()) {
+                    alert('Error in query: ' + response.getMessage() + ' ' + response.getDetailedMessage());
+                    return
+                }
+            }
+
+            function summaryResponseHandler(response) {
+                checkError(response);
+                var data = response.getDataTable();
+                var colCount=data.getNumberOfColumns();
+                data.sort({column:colCount-1 , desc: true});
+                colCountNEW=colCount-2;
+
+                switch (colCountNEW) {
+                    case 6:
+                        var options = {
+                            vAxis: {title: vtitle1},
+                            hAxis: {title: "Country"},
+                            seriesType: "bars",
+                            series: {6: {type: "line"}}
+                            };
+                        break;
+                    case 5:
+                        var options = {
+                            vAxis: {title: vtitle1},
+                            hAxis: {title: "Country"},
+                            seriesType: "bars",
+                            series: {5: {type: "line"}}
+                            };
+                        break;
+                    case 4:
+                        var options = {
+                            vAxis: {title: vtitle1},
+                            hAxis: {title: "Country"},
+                            seriesType: "bars",
+                            series: {4: {type: "line"}}
+                            };
+                        break;
+                    case 3:
+                        var options = {
+                            vAxis: {title: vtitle1},
+                            hAxis: {title: "Country"},
+                            seriesType: "bars",
+                            series: {3: {type: "line"}}
+                            };
+                        break;
+                    case 2:
+                        var options = {
+                            vAxis: {title: vtitle1},
+                            hAxis: {title: "Country"},
+                            seriesType: "bars",
+                            series: {2: {type: "line"}}
+                            };
+                        break;
+                    case 1:
+                        var options = {
+                            vAxis: {title: vtitle1},
+                            hAxis: {title: "Country"},
+                            seriesType: "bars",
+                            series: {1: {type: "line"}}
+                            };
+                        break;
+                    case 0:
+                        var options = {
+                            vAxis: {title: vtitle1},
+                            hAxis: {title: "Country"},
+                            seriesType: "bars",
+                            series: {0: {type: "line"}}
+                            };
+                        break;
+                }
+
+                var chart = new google.visualization.ComboChart(document.getElementById("military_spending_div"));
+                chart.draw(data, options);
+            } //summaryResponseHandler
+
+
+            function geographicalResponseHandler(response) {
+                checkError(response);
+                var data = response.getDataTable();
+                var options = {
+                    colorAxis : {colors: ['#f8d5bc','#e7711c']}
+                };
+
+            var chart = new google.visualization.GeoChart(document.getElementById('geographical_div'));
+            chart.draw(data, options);
+            } //geographicalResponseHandler
+
+            function trendResponseHandler(response) {
+                checkError(response);
+                var data = response.getDataTable();
+                var options = {
+                    chart: {
+                    title: 'Trended View',
+                    },
+                    vAxis: {title: vtitle1},
+                    hAxis: {title: "Years",
+                    format: '####',
+                    ticks: [2012,2013,2014,2015,2016,2017],
+                    textStyle:{bold: 1} }
+                };
+                var chart = new google.visualization.LineChart(document.getElementById("trend_div"));
+                chart.draw(data, options);
+            } //trendResponseHandler
+
+            function metricCompResponseHandler(response) {
+                if (twoQuery==0) {
+                    data1Query=response.getDataTable();
+                    twoQuery=1;
+                }
+                else {
+                    twoQuery=0;
+                    data2Query=response.getDataTable();
+                    if (x1_metric==data1Query.getValue(1,1)) {
+                        data1Query.removeColumn(1);
+                        data2Query.removeColumn(1);
+                        var data = google.visualization.data.join(data1Query, data2Query, "inner",[[0,0]], [1], [1]);
+                    }
+                    else {
+                        data1Query.removeColumn(1);
+                        data2Query.removeColumn(1);
+                        var data = google.visualization.data.join(data2Query, data1Query, "inner",[[0,0]], [1], [1]);
+                    }
+                    data.sort({column: 1, desc: true});
+                
+                var options = {
+                    legend: 'none',
+                    bars: 'horizontal',
+                    isStacked: true,
+                    annotation: {alwaysOutside: true},
+                    title: vtitle2,
+                    vAxis: {title: 'Country'},
+                    hAxis: {title: 'Spending'}
+                };
+
+                var chart = new google.visualization.BarChart(document.getElementById('metricComp_div'));
+                chart.draw(data, options);
+
+            }}//yearlyPerformanceResponseHandler
+
+            function yearlyPerformanceResponseHandler(response) {
+                checkError(response);
+                if (twoQuery2==0) {
+                    oldData=response.getDataTable();
+                    twoQuery2=1;
+                }
+                else {
+                    twoQuery2=0;
+                    newData=response.getDataTable();
+
+                    var colChartDiff1 = new google.visualization.ColumnChart(document.getElementById('yearlyPerformance1_div'));
+                    var colChartDiff2 = new google.visualization.ColumnChart(document.getElementById('yearlyPerformance2_div'));
+                    var colChartDiff3 = new google.visualization.ColumnChart(document.getElementById('yearlyPerformance3_div'));
+
+
+
+                    if (oldData.getColumnLabel(1)=="Mean") {
+                        oldData.setColumnLabel(1,newData.getColumnLabel(1));
+                        var oldView1 = new google.visualization.DataView(oldData);
+                        var oldView2 = new google.visualization.DataView(oldData);
+                        var oldView3 = new google.visualization.DataView(oldData);
+                        var newView1 = new google.visualization.DataView(newData);
+                        var newView2 = new google.visualization.DataView(newData);
+                        var newView3 = new google.visualization.DataView(newData);
+                    }
+                    else {
+                        newData.setColumnLabel(1,oldData.getColumnLabel(1));
+                        var oldView1 = new google.visualization.DataView(newData);
+                        var oldView2 = new google.visualization.DataView(newData);
+                        var oldView3 = new google.visualization.DataView(newData);
+                        var newView1 = new google.visualization.DataView(oldData);
+                        var newView2 = new google.visualization.DataView(oldData);
+                        var newView3 = new google.visualization.DataView(oldData);
+                    }
+
+                    oldView1.setRows([0,1,2,3]);
+                    oldView2.setRows([4,5,6,7]);
+                    oldView3.setRows([8,9,10]);
+                    newView1.setRows([0,1,2,3]);
+                    newView2.setRows([4,5,6,7]);
+                    newView3.setRows([8,9,10]);
+                    var diffData1 = colChartDiff1.computeDiff(oldView1, newView1);
+                    var diffData2 = colChartDiff2.computeDiff(oldView2, newView2);
+                    var diffData3 = colChartDiff3.computeDiff(oldView3, newView3);
+                    //var colChartDiff1 = new google.visualization.ColumnChart(document.getElementById('yearlyPerformance1_div'));
+                    //var diffData1 = colChartDiff1.computeDiff(oldView1, newView1);
+                    var options1 = {
+                        title: "Overall Spend (in Billion ($)",
+                        legend: { position: 'top' },
+                        series: {
+                            0: {color: "#3E68C5" }
+                        }
+                    };
+
+                    colChartDiff1.draw(diffData1,options1);
+
+                    //var colChartDiff2 = new google.visualization.ColumnChart(document.getElementById('yearlyPerformance2_div'));
+                    //var diffData2 = colChartDiff2.computeDiff(oldView2, newView2);
+                    var options2 = {
+                        title: "Per Capita Spend (in ($)",
+                        legend: { position: 'top' },
+                        series: {
+                            0: {color: "#CC4627"}
+                        }
+                    };
+
+                    colChartDiff2.draw(diffData2,options2);
+
+                    //var colChartDiff3 = new google.visualization.ColumnChart(document.getElementById('yearlyPerformance3_div'));
+                    //var diffData3 = colChartDiff3.computeDiff(oldView3, newView3);
+                    var options3 = {
+                        title: "% of GDP",
+                        legend: { position: 'top' },
+                        series: {
+                            0: {color: "#F29C38"}
+                        }
+                    };
+
+                    colChartDiff3.draw(diffData3,options3);
+
+                }}//yearlyPerformanceResponseHandler
+
+            function countryCompResponseHandler(response) {
+                checkError(response);
+                var data = response.getDataTable();
+                var dashboard = new google.visualization.Dashboard(document.getElementById('countryComp_div'));
+                var countrySelector = new google.visualization.ControlWrapper({
+                    'controlType': 'CategoryFilter',
+                    'containerId': 'programmatic_control_div',
+                    'options': {
+                        'filterColumnLabel': 'Country',
+                        'ui': {'labelStacking': 'vertical'}
+                    }
+                    });
+
+                var chart = new google.visualization.ChartWrapper({
+                    'chartType': 'BubbleChart',
+                    'containerId': 'chart_div',
+                    'options': {
+                        'hAxis': {'title': 'Shared (% of GDP)'},
+                        'vAxis': {'title': 'PerCapita (in $)'},
+                        'bubble': {'textStyle': {'fontSize': 11}} 
+                        }
+                    });
+                dashboard.bind(countrySelector, chart);
+                dashboard.draw(data);
+            } //countryCompResponseHandler
+
+
+            function changeYear(place,responseHandler) {
+                if (place=="Trends") {
+                    var x = document.getElementById("myCategory"+place).value;
+                    var y = document.getElementById("mySubCategory"+place).value;
+                    x=x+y;
+                    var newQuery="SELECT A,C,D,E,F,G,H,I,J,K,L,M,N,O,P,Q,R,S,T,U,V WHERE B='"+x+"'";
+                    drawSheetName("Trends",newQuery,responseHandler);
+                }
+                else if (place=="Geographical") {
+                    var x = document.getElementById("myCategory"+place).value;
+                    var y = document.getElementById("mySubCategory"+place).value;
+                    if (y.includes("Shared")) {
+                        vtitle1="% of GDP"
+                    }
+                    else if (y.includes("perCapita")) {
+                        vtitle1="Spend Per Capita($)"
+                    }
+                    else {
+                        vtitle1="In Billions ($)"
+                    };
+                    x=x+y;
+                    var z = document.getElementById("myYearGeographical").value;
+                    var newQuery="SELECT A,"
+                    newQuery+=z+' WHERE NOT A="European Union"';
+                    drawSheetName(x,newQuery,responseHandler);
+
+                }
+                else if (place=="yearlyPerformance") {
+                    var z = document.getElementById("myYearyearlyPerformance").value;
+                    var country = document.getElementById("myCountryyearlyPerformance").value;
+                    var newQuery1='SELECT B,I WHERE A="'+country+'"';
+                    var newQuery2='SELECT B,'+z+' WHERE A="'+country+'"';
+                    drawSheetName("yearlyPerformance",newQuery1,responseHandler);
+                    //sleep(500);
+                    drawSheetName("yearlyPerformance",newQuery2,responseHandler);
+
+                }
+                else if (place=="metricComp"){
+                    x1_metric = document.getElementById("myCategory"+place).value;
+                    y1_metric = document.getElementById("mySubCategory"+place).value;
+
+                    x1_metric=x1_metric+y1_metric;
+                    x2_metric = document.getElementById("myCategory"+place+"2").value;
+                    y2_metric = document.getElementById("mySubCategory"+place+"2").value;
+                    x2_metric=x2_metric+y2_metric;
+                    var z = document.getElementById("myYearmetricComp").value;
+                    var newQuery="SELECT A,B,"
+                    newQuery+=z;
+                    if (y1_metric.includes("Shared")) {
+                        vtitle2=x1_metric+" (% of GDP) vs "
+                    }
+                    else if (y1_metric.includes("perCapita")) {
+                        vtitle2=x1_metric+" (in $) vs "
+                    }
+                    else {
+                        vtitle2=x1_metric+" (in Billions $) vs "
+                    };
+
+                    if (y2_metric.includes("Shared")) {
+                        vtitle2+=x2_metric+" (% of GDP)"
+                    }
+                    else if (y2_metric.includes("perCapita")) {
+                        vtitle2+=x2_metric+" (in $)"
+                    }
+                    else {
+                        vtitle2+=x2_metric+" (in Billions $)"
+                    };
+                    
+                    drawSheetName(x1_metric,newQuery,responseHandler);
+                    //sleep(500);
+                    drawSheetName(x2_metric,newQuery,responseHandler);
+                }
+                else if (place=="countryComp"){
+                    var x = parseInt(document.getElementById("myCategory"+place).value);
+                    var y = parseInt(document.getElementById("myYear"+place).value);
+                    var newQuery="SELECT ";
+                    //alert(x)
+                    //alert(y)
+                    for (i = 0; i < 4; i++) {
+                        var currentColumn= checkColumn(x);
+                        //alert(x)
+                        newQuery+=currentColumn+",";
+                        if (i>0){
+                            x=x+9;
+                        }
+                        else {
+                            x=x+y;
+                        }
+                    };
+                    //alert(newQuery)
+                    newQuery = newQuery.substring(0, newQuery.length - 1);
+                    //alert(newQuery)
+                    drawSheetName("countryComp",newQuery,responseHandler);
+                }
+                else {
+                    var x = document.getElementById("myCategory"+place).value;
+                    var y = document.getElementById("mySubCategory"+place).value;
+                    if (y.includes("Shared")) {
+                        vtitle1="% of GDP"
+                    }
+                    else if (y.includes("perCapita")) {
+                        vtitle1="Spend Per Capita($)"
+                    }
+                    else {
+                        vtitle1="In Billions ($)"
+                    };
+                    x=x+y;
+                    var newQuery="SELECT A,"
+                    for (i = 2012; i < 2018; i++) {
+                        if (document.getElementById('Year'+i+place).checked) {
+                            newQuery+=String.fromCharCode('C'.charCodeAt() + (i-2012))+","
+                            }}
+                    newQuery+="I";
+                    drawSheetName(x,newQuery,responseHandler);
+                }
+            }
+        </script>
+    </head>
+    <body id="page-top">
+        <!-- Navigation-->
+        <nav class="navbar navbar-expand-lg navbar-dark bg-primary fixed-top" id="sideNav">
+            <a class="navbar-brand js-scroll-trigger" href="#page-top">
+                <span class="d-block d-lg-none">G20</span><span class="d-none d-lg-block"><img class="img-fluid img-profile rounded-circle mx-auto mb-2" src="assets/img/profile.png" alt="" /></span>
+            </a>
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation"><span class="navbar-toggler-icon"></span></button>
+            <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                <ul class="navbar-nav">
+                    <li class="nav-item" style="text-align: left;"><a class="nav-link js-scroll-trigger" href="#home">Home</a></li>
+                    <li class="nav-item" style="text-align: left;"><a class="nav-link js-scroll-trigger" href="#about">About</a></li>
+                    <li class="nav-item" style="text-align: left;"><a class="nav-link js-scroll-trigger" href="#summary">Summary</a></li>
+                    <li class="nav-item" style="text-align: left;"><a class="nav-link js-scroll-trigger" href="#geographical">Geographical</a></li>
+                    <li class="nav-item" style="text-align: left;"><a class="nav-link js-scroll-trigger" href="#trends">Trends</a></li>
+                    <li class="nav-item" style="text-align: left;"><a class="nav-link js-scroll-trigger" href="#metricComp">Compare Metrics</a></li>
+                    <li class="nav-item" style="text-align: left;"><a class="nav-link js-scroll-trigger" href="#yearlyPerformance">Yearly Performance</a></li>
+                    <li class="nav-item" style="text-align: left;"><a class="nav-link js-scroll-trigger" href="#countryComp">Compare Countries</a></li>
+                </ul>
+            </div>
+        </nav>
+        <!-- Page Content -->
+        <div class="container-fluid p-0">
+            <!-- About -->
+            <section class="resume-section" id="home">
+                <div class="resume-section-content">
+                    <h1 class="mb-0">G20 Countries </br><span class="text-primary">Key Development Indicators</span></h1>
+                </br>
+                    <p class="lead mb-5">The G20 is an international forum for the governments and central bank governors from 19 countries and the European Union (EU). 
+                        It was founded in 1999 with the aim to discuss policy pertaining to the promotion of international financial stability and seek to address issues that go 
+                        beyond the responsibilities of any one organization.</p>
+                    <div class="social-icons">
+                        <a class="social-icon" href="https://g20.org/" target="_blank"><i class="fas fa-link"></i></a><a class="social-icon" href="https://www.instagram.com/g20org/" target="_blank"><i class="fab fa-instagram" target="_blank"></i></a><a class="social-icon" href="https://twitter.com/g20org" target="_blank"><i class="fab fa-twitter"></i></a><a class="social-icon" href="https://www.facebook.com/g20org/" target="_blank"><i class="fab fa-facebook-f"></i></a>
+                    </div>
+                </br></br></br></br></br>
+                    <p style="font-size: 20px;"><strong>Presented By</strong>: Utkarsh Nigam</p>
+                </div>
+            </section>
+            <hr class="m-0" />
+            <!-- About -->
+            <section class="resume-section" id="about">
+                <div class="resume-section-content">
+                    <h2 class="mb-5">About</h2>
+                    <table style="width: 90%">
+                        <tr>
+                            <th colspan="4" style= "padding-bottom: 10px; font-size:20px;">G20 Countries:</th>
+                        </tr>
+                        <tr>
+                            <td style="border: 2px solid #dddddd; text-align: left; padding: 4px;">Argentina</td>
+                            <td style="border: 2px solid #dddddd; text-align: left; padding: 4px;">Australia</td>
+                            <td style="border: 2px solid #dddddd; text-align: left; padding: 4px;">Brazil</td>
+                            <td style="border: 2px solid #dddddd; text-align: left; padding: 4px;">Canada</td>
+                        </tr>
+                        <tr style="background-color: #dddddd;">
+                            <td style="border: 2px solid #dddddd; text-align: left; padding: 4px;">China</td>
+                            <td style="border: 2px solid #dddddd; text-align: left; padding: 4px;">European Union<sup>*</sup></td>
+                            <td style="border: 2px solid #dddddd; text-align: left; padding: 4px;">France</td>
+                            <td style="border: 2px solid #dddddd; text-align: left; padding: 4px;">Germany</td>
+                        </tr>
+                        <tr>
+                            <td style="border: 2px solid #dddddd; text-align: left; padding: 4px;">India</td>
+                            <td style="border: 2px solid #dddddd; text-align: left; padding: 4px;">Indonesia</td>
+                            <td style="border: 2px solid #dddddd; text-align: left; padding: 4px;">Italy</td>
+                            <td style="border: 2px solid #dddddd; text-align: left; padding: 4px;">Japan</td>
+                        </tr>
+                        <tr style="background-color: #dddddd;">
+                            <td style="border: 2px solid #dddddd; text-align: left; padding: 4px;">Mexico</td>
+                            <td style="border: 2px solid #dddddd; text-align: left; padding: 4px;">Russia</td>
+                            <td style="border: 2px solid #dddddd; text-align: left; padding: 4px;">Saudi Arabia</td>
+                            <td style="border: 2px solid #dddddd; text-align: left; padding: 4px;">South Africa</td>
+                        </tr>
+                        <tr>
+                            <td style="border: 2px solid #dddddd; text-align: left; padding: 4px;">Soutd Korea</td>
+                            <td style="border: 2px solid #dddddd; text-align: left; padding: 4px;">Turkey</td>
+                            <td style="border: 2px solid #dddddd; text-align: left; padding: 4px;">United Kingdom</td>
+                            <td style="border: 2px solid #dddddd; text-align: left; padding: 4px;">United States</td>
+                        </tr>
+                        <tr>
+                            <th colspan="4" style= "padding-bottom: 10px;padding-top: 10px; font-size:20px;"></th>
+                        </tr>
+                        <tr>
+                            <th style= "font-size:20px;">Data Source: </th>
+                            <td><a href="https://data.worldbank.org/" target="_blank">World Bank Open Data</a></td>
+                        </tr>
+                        <tr>
+                            <th colspan="4" style= "padding-bottom: 10px;padding-top: 10px; font-size:20px;"></th>
+                        </tr>
+                        <tr>
+                            <th style= "font-size:20px;">Date Range: </th>
+                            <td>2012 - 2017</td>
+                        </tr>
+                        <tr>
+                            <th colspan="4" style= "padding-bottom: 10px;padding-top: 10px; font-size:20px;"></th>
+                        </tr>
+                    </table>
+                    <p>Following metrics have been used as the development indicators:</p>
+                    <ul>
+                        <li><strong>Overall Spend</strong>: Total Spend in Billion $</li>
+                        <li><strong>PerCapita</strong>: Spend per Capita (Total Spend in $ / Total Population)</li>
+                        <li><strong>Shared (% of GDP)</strong>: Spend as % of GDP (Total Spend in $/Total GDP in $)</li>
+                        <li><strong>Mean</strong>: Average of the metric for all the years 2012 - 2017</li>
+                    </ul>
+                    <p>Note:</p>
+                    <ul style="list-style-type: square;">
+                        <li>Due to the non-availablity of few metrics for year 2018, date range has been chosen as 2012-2017 to maintain consistency.</li>
+                        <li>For cases where data for 1 year is not available, missing values have been treated by subsitituting them with the mean.</li>
+                        <li>For cases where data for more than 1 year is not available, missing values have been kept as NA and mean is calculated only as per the available data.</li>
+                        <li>For <a href="#yearlyPerformance">yearly performance</a> section, previous data label denotes the mean data for the country over 2012-2017.</li>
+                    </ul>
+                </br>
+                    <p>Special Mention:</p>
+                    <ul>
+                        <li><a href="https://developers.google.com/chart/interactive/docs/gallery" target="_blank">Google Charts</a></li>
+                        <li><a href="https://www.w3schools.com/" target="_blank">W3Schools</a></li>
+                    </ul>
+                </div>
+            </section>
+            <hr class="m-0" />
+            <!-- Summary -->
+            <section class="resume-section" id="summary">
+                <div class="resume-section-content">
+                    <h2 class="mb-5">Summary</h2>
+                    <div style="width: 1400px;height: 50px;">
+                        <div style="float: left; width: 100%;">
+                            <div style="float: left; width: 15%; font-weight:bold;">Select Category:</div>
+                            <div style="float: left; width: 15%;">
+                                <select id="myCategorySummary" width="140" style="width: 140px">
+                                    <option value="GDP">GDP</option>
+                                    <option value="Health">Health</option>
+                                    <option value="Education">Education</option>
+                                    <option value="Military">Military</option>
+                                </select>
+                            </div>
+                            <div style="float: left; width: 10%; font-weight:bold;">Select Years:</div>
+                            <div style="float: left; width: 60%;">
+                                <div style="float: left; padding-right: 25px;"><input type="checkbox" class="css-label lite-orange-check" name="Year2012" id="Year2012Summary" checked>2012</div>
+                                <div style="float: left; padding-right: 25px;"><input type="checkbox" class="css-label lite-orange-check" name="Year2013" id="Year2013Summary" checked>2013</div>
+                                <div style="float: left; padding-right: 25px;"><input type="checkbox" class="css-label lite-orange-check" name="Year2014" id="Year2014Summary" checked>2014</div>
+                                <div style="float: left; padding-right: 25px;"><input type="checkbox" class="css-label lite-orange-check" name="Year2015" id="Year2015Summary" checked>2015</div>
+                                <div style="float: left; padding-right: 25px;"><input type="checkbox" class="css-label lite-orange-check" name="Year2016" id="Year2016Summary" checked>2016</div>
+                                <div style="float: left; padding-right: 25px;"><input type="checkbox" class="css-label lite-orange-check" name="Year2017" id="Year2017Summary" checked>2017</div>
+                            </div>
+                        </div>
+                        <div style="float: left; width: 100%; padding-top: 10px; padding-bottom: 10px;">
+                            <div style="float: left; width: 15%; font-weight:bold;">Select Metric Type:</div>
+                            <div style="float: left; width: 25%;">
+                                <select id="mySubCategorySummary" width="140" style="width: 140px">
+                                    <option value="Overall">Overall Spend</option>
+                                    <option value="Shared">Shared</option>
+                                    <option value="PerCapita">Per Capita</option>
+                                </select>
+                            </div>
+                            <div style="float: left; width: 60%;">
+                                <button onclick="changeYear('Summary',summaryResponseHandler)" width="440" style="width: 440px">Update Chart</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="military_spending_div" style="width: 1400px; height: 750px; padding-top: 20px;"></div>
+                    
+                </div>
+            </section>
+            <hr class="m-0" />
+             <!-- Geographical -->
+             <section class="resume-section" id="geographical">
+                <div class="resume-section-content">
+                    <h2 class="mb-5">Geographical</h2>
+                    <div style="width: 1400px;height: 50px;">
+                        <div style="float: left; width: 100%;">
+                            <div style="float: left; width: 15%; font-weight:bold;">Select Category:</div>
+                            <div style="float: left; width: 15%;">
+                                <select id="myCategoryGeographical" width="140" style="width: 140px">
+                                    <option value="GDP">GDP</option>
+                                    <option value="Health">Health</option>
+                                    <option value="Education">Education</option>
+                                    <option value="Military">Military</option>
+                                </select>
+                            </div>
+                            <div style="float: left; width: 10%; font-weight:bold;">Select Year:</div>
+                            <div style="float: left; width: 60%;">
+                                <select id="myYearGeographical" width="140" style="width: 140px">
+                                    <option value="I">Mean</option>
+                                    <option value="C">2012</option>
+                                    <option value="D">2013</option>
+                                    <option value="E">2014</option>
+                                    <option value="F">2015</option>
+                                    <option value="G">2016</option>
+                                    <option value="H">2017</option>
+                                  </select>
+                            </div>
+                        </div>
+                        <div style="float: left; width: 100%; padding-top: 10px; padding-bottom: 10px;">
+                            <div style="float: left; width: 15%; font-weight:bold;">Select Metric Type:</div>
+                            <div style="float: left; width: 15%;">
+                                <select id="mySubCategoryGeographical" width="140" style="width: 140px">
+                                    <option value="Overall">Overall Spend</option>
+                                    <option value="Shared">Shared</option>
+                                    <option value="PerCapita">Per Capita</option>
+                                </select>
+                            </div>
+                            <div style="float: left; width: 70%;">
+                                <button onclick="changeYear('Geographical',geographicalResponseHandler)" width="280" style="width: 280px">Update Chart</button>
+                            </div>
+                        </div>
+                    </div>  
+                    <div id="geographical_div" style="width: 1400px; height: 750px; padding-top: 40px;"></div>
+                    
+                </div>
+            </section>
+            <hr class="m-0" />
+            <!-- Trends -->
+            <section class="resume-section" id="trends">
+                <div class="resume-section-content">
+                    <h2 class="mb-5">Trends</h2>
+                    <div style="width: 1400px;height: 50px;">
+                        <div style="float: left; width: 100%;">
+                            <div style="float: left; width: 15%; font-weight:bold;">Select Category:</div>
+                            <div style="float: left; width: 15%;">
+                                <select id="myCategoryTrends" width="140" style="width: 140px">
+                                    <option value="GDP">GDP</option>
+                                    <option value="Health">Health</option>
+                                    <option value="Education">Education</option>
+                                    <option value="Military">Military</option>
+                                </select>
+                            </div>
+                            <div style="float: left; width: 70%;">
+                                <button onclick="changeYear('Trends',trendResponseHandler)" width="280" style="width: 280px">Update Chart</button>
+                            </div>
+                        </div>
+                            
+                        <div style="float: left; width: 100%; padding-top: 10px; padding-bottom: 10px;">
+                            <div style="float: left; width: 15%; font-weight:bold;">Select Metric Type:</div>
+                            <div style="float: left; width: 15%;">
+                                <select id="mySubCategoryTrends" width="140" style="width: 140px">
+                                    <option value="Overall">Overall Spend</option>
+                                    <option value="Shared">Shared</option>
+                                    <option value="PerCapita">Per Capita</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="trend_div" style="float: left; width: 1400px; height: 800px;"></div>
+                </div>
+            </section>
+            <hr class="m-0" />
+            <!-- Compare Metrics -->
+            <section class="resume-section" id="metricComp">
+                <div class="resume-section-content">
+                    <h2 class="mb-5">Compare Metrics</h2>
+                    <div style="width: 1400px;height: 75px;">
+                        <div style="float: left; width: 100%;">
+                            <div style="float: left; width: 30%;">Select Metric 1</div>
+                            <div style="float: left; width: 70%;">Select Metric 2</div>
+                        </div>
+                        <div style="float: left; width: 100%; padding-top: 10px;">
+                            <div style="float: left; width: 15%; font-weight:bold;">Select Category:</div>
+                            <div style="float: left; width: 15%;">
+                                <select id="myCategorymetricComp" width="140" style="width: 140px">
+                                    <option value="GDP">GDP</option>
+                                    <option value="Health">Health</option>
+                                    <option value="Education">Education</option>
+                                    <option value="Military">Military</option>
+                                </select>
+                            </div>
+                            <div style="float: left; width: 15%; font-weight:bold;">Select Category:</div>
+                            <div style="float: left; width: 15%;">
+                                <select id="myCategorymetricComp2" width="140" style="width: 140px">
+                                    <option value="GDP">GDP</option>
+                                    <option value="Health">Health</option>
+                                    <option value="Education">Education</option>
+                                    <option value="Military">Military</option>
+                                </select>
+                            </div>
+                            <div style="float: left; width: 10%; font-weight:bold;">Select Year:</div>
+                            <div style="float: left; width: 30%;"> 
+                                <select id="myYearmetricComp" width="140" style="width: 140px">
+                                    <option value="I">Mean</option>
+                                    <option value="C">2012</option>
+                                    <option value="D">2013</option>
+                                    <option value="E">2014</option>
+                                    <option value="F">2015</option>
+                                    <option value="G">2016</option>
+                                    <option value="H">2017</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div style="float: left; width: 100%; padding-top: 10px; padding-bottom: 10px;">
+                            <div style="float: left; width: 15%; font-weight:bold;">Select Metric Type:</div>
+                            <div style="float: left; width: 15%;">
+                                <select id="mySubCategorymetricComp" width="140" style="width: 140px">
+                                    <option value="Overall">Overall Spend</option>
+                                    <option value="Shared">Shared</option>
+                                    <option value="PerCapita">Per Capita</option>
+                                </select>
+                            </div>
+                            <div style="float: left; width: 15%; font-weight:bold;">Select Metric Type:</div>
+                            <div style="float: left; width: 15%;">
+                                <select id="mySubCategorymetricComp2" width="140" style="width: 140px">
+                                    <option value="Overall">Overall Spend</option>
+                                    <option value="Shared">Shared</option>
+                                    <option value="PerCapita">Per Capita</option>
+                                </select>
+                                
+                            </div>
+                            <div style="float: left; width: 40%;"> 
+                                <button onclick="changeYear('metricComp',metricCompResponseHandler)" width="280" style="width: 280px">Update Chart</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="metricComp_div" style="width: 1400px; height: 750px; padding-top: 40px;"></div>
+                </div>
+            </section>
+            <hr class="m-0" />
+            <!-- Yearly Performance -->
+            <section class="resume-section" id="yearlyPerformance">
+                <div class="resume-section-content">
+                    <h2 class="mb-5">Yearly Performance</h2>
+                    <div style="width: 1400px;height: 75px;">
+                        <div style="float: left; width: 12%; font-weight:bold;">Select Country:</div>
+                        <div style="float: left; width: 25%;">
+                            <select id="myCountryyearlyPerformance" width="140" style="width: 140px">
+                                <option value="Argentina">Argentina</option>
+                                <option value="Australia">Australia</option>
+                                <option value="Brazil">Brazil</option>
+                                <option value="Canada">Canada</option>
+                                <option value="China">China</option>
+                                <option value="European Union">European Union</option>
+                                <option value="France">France</option>
+                                <option value="Germany">Germany</option>
+                                <option value="India">India</option>
+                                <option value="Indonesia">Indonesia</option>
+                                <option value="Italy">Italy</option>
+                                <option value="Japan">Japan</option>
+                                <option value="Mexico">Mexico</option>
+                                <option value="Russia">Russia</option>
+                                <option value="Saudi Arabia">Saudi Arabia</option>
+                                <option value="South Africa">South Africa</option>
+                                <option value="South Korea">South Korea</option>
+                                <option value="Turkey">Turkey</option>
+                                <option value="United Kingdom">United Kingdom</option>
+                                <option value="United States">United States</option>
+                            </select>
+                        </div>
+                        <div style="float: left; width: 12%; font-weight:bold;">Select Year:</div>
+                        <div style="float: left; width: 25%;">
+                            <select id="myYearyearlyPerformance" width="140" style="width: 140px">
+                                <option value="C">2012</option>
+                                <option value="D">2013</option>
+                                <option value="E">2014</option>
+                                <option value="F">2015</option>
+                                <option value="G">2016</option>
+                                <option value="H">2017</option>
+                            </select>
+                        </div>
+                        <div style="float: left; width: 26%;"> 
+                            <button onclick="changeYear('yearlyPerformance',yearlyPerformanceResponseHandler)" width="280" style="width: 280px">Update Chart</button>
+                        </div>
+                    </div>
+                    <div class="yearlyPerfomance" style="width: 1400px; height: 800px;">
+                        <div id="yearlyPerformance1_div" style="float: left; width: 35%; height: 800px"></div>
+                        <div id="yearlyPerformance2_div" style="float: left; width: 35%; height: 800px"></div>
+                        <div id="yearlyPerformance3_div" style="float: left; width: 30%; height: 800px"></div>
+                    </div>
+                </div>
+            </section>
+            <hr class="m-0" />
+            <!-- Compare Countries -->
+            <section class="resume-section" id="countryComp">
+                <div class="resume-section-content">
+                    <h2 class="mb-5">Compare Countries</h2>
+                    <div style="width: 1400px;height: 75px;">
+                        <div style="float: left; width: 12%; font-weight:bold;">Select Category:</div>
+                        <div style="float: left; width: 25%;">
+                            <select id="myCategorycountryComp" width="140" style="width: 140px">
+                                <option value=1>GDP</option>
+                                <option value=55>Health</option>
+                                <option value=82>Education</option>
+                                <option value=28>Military</option>
+                              </select>
+                        </div>
+                        <div style="float: left; width: 12%; font-weight:bold;">Select Year:</div>
+                        <div style="float: left; width: 25%;">
+                            <select id="myYearcountryComp" width="140" style="width: 140px">
+                                <option value=7>Mean</option>
+                                <option value=1>2012</option>
+                                <option value=2>2013</option>
+                                <option value=3>2014</option>
+                                <option value=4>2015</option>
+                                <option value=5>2016</option>
+                                <option value=6>2017</option>
+                              </select>
+                        </div>
+                        <div style="float: left; width: 26%;"> 
+                            <button onclick="changeYear('countryComp',countryCompResponseHandler)" width="280" style="width: 280px">Update Chart</button>
+                        </div>
+                    </div>
+                    <div id="countryComp_div" style="width: 1400px; height: 500px;">
+                            <div id="programmatic_control_div" style="padding-top: 100px; float: left; width: 20%;; height: 800px"></div>
+                            <div id="chart_div" style="float: left; width: 80%; height: 800px"></div>
+                    </div>
+                </div>
+            </section>
+        </div>
+        <!-- Bootstrap core JS-->
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+        <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.bundle.min.js"></script>
+        <!-- Third party plugin JS-->
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-easing/1.4.1/jquery.easing.min.js"></script>
+        <!-- Core theme JS-->
+        <script src="js/scripts.js"></script>
+    </body>
+</html>
